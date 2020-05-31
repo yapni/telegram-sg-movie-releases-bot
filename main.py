@@ -40,7 +40,7 @@ def start(update, context):
         LOGGER.info("New user: " + str(user))
         msg = "Welcome to @sgmovierelease_bot! This bot notifies you when a movie is released in Singapore and " \
             "lets you know all upcoming movie releases! To view the list of commands, type /help.\n\n" \
-            " Note: The upcoming movie releases are currated from IMDB's website and are hence not exhaustive."
+            "⚠ Note: The upcoming movie releases are currated from IMDB's website and are hence not exhaustive."
         context.bot.send_message(chat_id=chat_id, text=msg)
     else: # User already in db
         msg = "You have already started the bot. To view the list of commands, type /help."
@@ -169,7 +169,7 @@ def help(update, context):
     msg = "ℹ This bots updates you on upcoming movie releases in Singapore. " \
             "If you wish to be notified whenever there is a new movie released, be sure to type /start. " \
             "If you no longer wish to be notified, type /stop.\n\n" \
-            "List of commands:\n" \
+            "<b>List of commands:</b>\n\n" \
             "/start: Receive notifications whenever there is a new movie released.\n" \
             "/stop: Stop receiving notifcations from the bot.\n" \
             "/listall: List all upcoming movie releases in Singapore.\n" \
@@ -179,7 +179,7 @@ def help(update, context):
                 "However, you can also update the database manually using this command.\n" \
             "/help: Show this menu"
     
-    context.bot.send_message(chat_id=chat_id, text=msg)
+    context.bot.send_message(chat_id=chat_id, text=msg, parse_mode=ParseMode.HTML)
         
 def update_db(context: CallbackContext):
     '''
