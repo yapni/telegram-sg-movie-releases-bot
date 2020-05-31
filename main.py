@@ -173,8 +173,8 @@ def help(update, context):
             "/start: Receive notifications whenever there is a new movie released.\n" \
             "/stop: Stop receiving notifcations from the bot.\n" \
             "/listall: List all upcoming movie releases in Singapore.\n" \
-            "/info <movie>: See information about a movie. "\
-                "You must ensure that <movie> must be the full title of the movie (case-insensitive).\n" \
+            "/info [movie_title]: See information about a movie. "\
+                "You must ensure that [movie_title] must be the full title of the movie (case-insensitive).\n" \
             "/update: Update the database of movie releases. The database will be automatically updated every midnight. " \
                 "However, you can also update the database manually using this command.\n" \
             "/help: Show this menu"
