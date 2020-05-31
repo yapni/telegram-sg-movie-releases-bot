@@ -79,10 +79,10 @@ def update(update, context):
     context.bot.send_message(chat_id=chat_id, text=updating_msg)
 
     if update_db(None): # Success
-        updated_msg = "🟢 Database successfully updated!"
+        updated_msg = "✔ Database successfully updated!"
         context.bot.send_message(chat_id=chat_id, text=updated_msg)
     else:
-        failed_msg = "🔴 Failed to update database"
+        failed_msg = "❌ Failed to update database"
         context.bot.send_message(chat_id=chat_id, text=failed_msg)
 
 def listall(update, context):
