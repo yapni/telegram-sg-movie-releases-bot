@@ -10,7 +10,7 @@ The bot checks for upcoming movie releases and updates the database every midnig
 
 ## Requirements
 * [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/): For web scrapping
-* [psycopg2]([https://www.psycopg.org/docs/): For interfacing with PostgreSQL
+* [psycopg2](https://www.psycopg.org/docs/): For interfacing with PostgreSQL
 * [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot): Python wrapper for [Telegram API](https://core.telegram.org/bots/api)
 * [pytz](https://pythonhosted.org/pytz/): For timezone definitions
 * [requests](https://requests.readthedocs.io/en/master/): For HTTP requests
