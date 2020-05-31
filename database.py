@@ -41,6 +41,8 @@ class DatabaseManager:
                     database=self.db_name
                 )
             else:
+                LOGGER.info("Connecting to the database {} at {} (port {}) as user {}"
+                        .format(self.db_name, self.host, self.port, self.user))
                 self.connection = psycopg2.connect(
                     user=self.user,
                     host=self.host,

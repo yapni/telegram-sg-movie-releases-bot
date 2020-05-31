@@ -19,19 +19,6 @@ import requests
 import sql_queries as queries
 import sys
 
-# Fetch required variables
-TOKEN = os.getenv('TOKEN') # Authentication token for this bot
-PORT = int(os.environ.get('PORT', 8443)) # Port number to listen for the webhook (default: 8443)
-MODE = os.getenv('MODE') # Development ('dev') mode or production mode ('prod')
-DATABASE_NAME = os.getenv('DB_NAME') # Database name
-DATABASE_USER = os.getenv('DB_USER') # Database user
-DATABASE_PORT = os.getenv('DB_PORT') # Database port (5432 for heroku)
-DATABASE_HOST = os.getenv('DATABASE_URL') # Database host
-HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
-
-# Database stuff
-DB_MGR = DatabaseManager(DATABASE_NAME, DATABASE_USER, DATABASE_PORT, DATABASE_HOST)
-
 # Set up logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -273,17 +260,39 @@ def wake(context: CallbackContext):
     LOGGER.info("Keeping the bot awake with a cup of coffee...")
 
 def main():
+    # Fetch required variables
+    token = os.getenv('TOKEN') # Authentication token for this bot
+    port = int(os.environ.get('PORT', 8443)) # Port number to listen for the webhook (default: 8443)
+    mode = os.getenv('MODE') # Development ('dev') mode or production mode ('prod')
+    database_name = os.getenv('DB_NAME') # Database name
+    database_user = os.getenv('DB_USER') # Database user
+    database_port = os.getenv('DB_PORT') # Database port (5432 for heroku)
+    database_host = os.getenv('DB_HOST') # Database host
+    database_url = os.getenv('DATABASE_URL') # For heroku deployment
+    heroku_app_name = os.getenv('HEROKU_APP_NAME')
+
     # Check deployment mode
-    if MODE != 'dev' and MODE != 'prod':
+    if mode != 'dev' and mode != 'prod':
         LOGGER.error("Invalid MODE value! Should be 'dev' or 'prod'.")
         sys.exit(1)
 
-    # Initialise database and update the movies table
-    DB_MGR.connect_db(with_pwd=MODE=='prod')
+    # Generate DatabaseManager instance
+    global DB_MGR
+    if mode == 'prod':
+        database_url_stripped = database_url.replace('postgres://', '')
+        database_user, database_pwd = database_url_stripped.split("@")[0].split(":")
+        database_host = database_url_stripped.split("@")[1].split(":")[0]
+        database_port, database_name = database_url_stripped.split("@")[1].split(":")[1].split("/")
+        DB_MGR = DatabaseManager(database_name, database_user, database_port, database_host, password=database_pwd)
+    else:
+        DB_MGR = DatabaseManager(database_name, database_user, database_port, database_host)
+
+    # Connect to db and update tables
+    DB_MGR.connect_db(with_pwd=mode=='prod')
     DB_MGR.create_tables()
     update_db(None)
 
-    updater = Updater(token=TOKEN, use_context=True)
+    updater = Updater(token=token, use_context=True)
     dispatcher = updater.dispatcher
 
     # Register periodic tasks
@@ -314,16 +323,16 @@ def main():
     dispatcher.add_handler(help_handler)
 
     # Start the bot
-    if MODE == 'dev':
+    if mode == 'dev':
         # Use polling (i.e. getUpdates API method) if in development mode
         LOGGER.info("Starting bot in development mode...")
         updater.start_polling()
-    elif MODE == 'prod':
+    elif mode == 'prod':
         # Use webhooks if in production mode
         LOGGER.info("Starting bot in production mode...")
-        updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
-        updater.bot.set_webhook('https://{}.herokuapp.com/{}'.format(HEROKU_APP_NAME, TOKEN))
-        LOGGER.info("Webhook set at https://{}.herokuapp.com/<token>".format(HEROKU_APP_NAME))
+        updater.start_webhook(listen='0.0.0.0', port=port, url_path=token)
+        updater.bot.set_webhook('https://{}.herokuapp.com/{}'.format(heroku_app_name, token))
+        LOGGER.info("Webhook set at https://{}.herokuapp.com/<token>".format(heroku_app_name))
         updater.idle()
 
 if __name__ == '__main__':
