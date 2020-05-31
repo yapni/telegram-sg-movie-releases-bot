@@ -40,7 +40,7 @@ def start(update, context):
         LOGGER.info("New user: " + str(user))
         msg = "Welcome to @sgmovierelease_bot! This bot notifies you when a movie is released in Singapore and " \
             "lets you know all upcoming movie releases! To view the list of commands, type /help.\n\n" \
-            "⚠ Note: The upcoming movie releases are currated from IMDB's website and are hence not exhaustive."
+            "⚠ Note: The upcoming movie releases are curated from IMDB's website and are hence not exhaustive."
         context.bot.send_message(chat_id=chat_id, text=msg)
     else: # User already in db
         msg = "You have already started the bot. To view the list of commands, type /help."
