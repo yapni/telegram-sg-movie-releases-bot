@@ -300,7 +300,7 @@ def main():
     timezone = pytz.timezone('Asia/Singapore')
     job_queue.run_once(update_db, datetime.time(hour=0, minute=0, second=0, tzinfo=timezone)) # Every midnight
     job_queue.run_once(notify_user, datetime.time(hour=8, minute=0, second=0, tzinfo=timezone)) # Every 8am
-    job_queue.run_repeating(wake, datetime.timedelta(minutes=20)) # Wake bot every 20 mins
+    job_queue.run_repeating(wake, datetime.timedelta(minutes=10)) # Wake bot every 10 mins
 
     # Register callback functions
     # /start
