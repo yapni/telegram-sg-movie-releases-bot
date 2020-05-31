@@ -36,7 +36,7 @@ $ pip install -r requirements.txt
    - `HEROKU_APP_NAME`: Heroku app name. Required if running in production mode.
 
    > Note: If you are running in 'dev' mode, you must set DB_NAME, DB_HOST, DB_PORT and DB_USER to connect to the database.
-   > DATABASE_URL is only rqeuired for Heroku deployments.
+   > DATABASE_URL is only required for Heroku deployments.
 3. Run the main script:
 ```shell
 $ python3 main.py 
