@@ -14,7 +14,6 @@ from user import User
 import datetime
 import logging
 import os
-import psycopg2
 import pytz
 import requests
 import sql_queries as queries
