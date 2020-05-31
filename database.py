@@ -13,28 +13,40 @@ LOGGER = logging.getLogger()
 
 class DatabaseManager:
 
-    def __init__(self, db_name, user, port, host):
+    def __init__(self, db_name, user, port, host, password=''):
         self.db_name = db_name
         self.user = user
+        self.password = password
         self.port = port
         self.host = host
         self.connection = None
         self.cursor = None
     
-    def connect_db(self):
+    def connect_db(self, with_pwd):
         '''
         Attempts to connect to the database.
         Returns a connection object if success, exit if fail.
+
+        @param with_pwd: If True, connect to db with a password. Else, connect to db without password.
         '''
         try:
-            LOGGER.info("Connecting to the database {} at {} (port {}) as user {}"
+            if with_pwd:
+                LOGGER.info("Connecting to the database {} at {} (port {}) as user {} (with password)"
                         .format(self.db_name, self.host, self.port, self.user))
-            self.connection = psycopg2.connect(
-                user=self.user,
-                host=self.host,
-                port=self.port,
-                database=self.db_name
-            )
+                self.connection = psycopg2.connect(
+                    user=self.user,
+                    password=self.password,
+                    host=self.host,
+                    port=self.port,
+                    database=self.db_name
+                )
+            else:
+                self.connection = psycopg2.connect(
+                    user=self.user,
+                    host=self.host,
+                    port=self.port,
+                    database=self.db_name
+                )
             self.cursor = self.connection.cursor()
         except Exception as e:
             LOGGER.error("Failed to connect to the database!")

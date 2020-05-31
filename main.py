@@ -20,12 +20,14 @@ import sql_queries as queries
 import sys
 
 # Fetch required variables
-TOKEN = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_TOKEN') # Authentication token for this bot
-MODE = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_MODE') # Development ('dev') mode or production mode ('prod')
-DATABASE_NAME = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_DB') # Database name
-DATABASE_USER = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_DB_USER') # Database user
-DATABASE_PORT = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_DB_PORT') # Database port
-DATABASE_HOST = os.getenv('TELEGRAM_SG_MOVIE_RELEASE_BOT_DB_HOST') # Database host
+TOKEN = os.getenv('TOKEN') # Authentication token for this bot
+PORT = int(os.environ.get('PORT', 8443)) # Port number to listen for the webhook (default: 8443)
+MODE = os.getenv('MODE') # Development ('dev') mode or production mode ('prod')
+DATABASE_NAME = os.getenv('DB_NAME') # Database name
+DATABASE_USER = os.getenv('DB_USER') # Database user
+DATABASE_PORT = os.getenv('DB_PORT') # Database port (5432 for heroku)
+DATABASE_HOST = os.getenv('DATABASE_URL') # Database host
+HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
 # Database stuff
 DB_MGR = DatabaseManager(DATABASE_NAME, DATABASE_USER, DATABASE_PORT, DATABASE_HOST)
@@ -271,8 +273,13 @@ def wake(context: CallbackContext):
     LOGGER.info("Keeping the bot awake with a cup of coffee...")
 
 def main():
+    # Check deployment mode
+    if MODE != 'dev' and MODE != 'prod':
+        LOGGER.error("Invalid MODE value! Should be 'dev' or 'prod'.")
+        sys.exit(1)
+
     # Initialise database and update the movies table
-    DB_MGR.connect_db()
+    DB_MGR.connect_db(with_pwd=MODE=='prod')
     DB_MGR.create_tables()
     update_db(None)
 
@@ -318,9 +325,6 @@ def main():
         updater.bot.set_webhook('https://{}.herokuapp.com/{}'.format(HEROKU_APP_NAME, TOKEN))
         LOGGER.info("Webhook set at https://{}.herokuapp.com/<token>".format(HEROKU_APP_NAME))
         updater.idle()
-    else:
-        LOGGER.error("Invalid TELEGRAM_SG_MOVIE_RELEASE_BOT_MODE value! Should be 'dev' or 'prod'.")
-        sys.exit(1)
 
 if __name__ == '__main__':
     main()
