@@ -7,6 +7,7 @@ Author: Yap Ni
 from database import DatabaseManager
 from releases import Releases
 from telegram import ParseMode
+from telegram.error import Unauthorized
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import Updater
@@ -249,7 +250,13 @@ def notify_user(context: CallbackContext):
             main_text = "☀ Good morning {}! Unfortunately, there are no movie releases in Singapore today. " \
                         "You can still check out upcoming releases by typing /listall." \
                         .format(user.username)
-            context.bot.send_message(chat_id=user.chat_id, text=main_text, parse_mode=ParseMode.HTML)
+            try:
+                context.bot.send_message(chat_id=user.chat_id, text=main_text, parse_mode=ParseMode.HTML)
+            except Unauthorized:
+                # User has blocked the bot: remove user from the database
+                DB_MGR.delete_user(user)
+                LOGGER.info("Removed user {} (id: {}) from the database as they have blocked/stopped the bot" \
+                            .format(user.username, user.chat_id))
     
     LOGGER.info("Notified users on today's releases")
 
