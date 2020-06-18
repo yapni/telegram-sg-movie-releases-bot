@@ -19,6 +19,7 @@ import pytz
 import requests
 import sql_queries as queries
 import sys
+import urllib
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -133,9 +134,8 @@ def info(update, context):
 
     # Craft movie description text
     target_movie = movies[0]
-    google_query_str = target_movie.title.split(' ')
-    google_query_str.append(target_movie.year)
-    google_link = "https://www.google.com/search?q={}".format('+'.join(google_query_str))
+    google_query_str = target_movie.title + " " + target_movie.year
+    google_link = "https://www.google.com/search?q={}".format(urllib.parse.quote(google_query_str))
     msg = "🎬" + target_movie.title + " (" + target_movie.year + ")\n\n" + \
                     "↘ <b>Release Date</b>\n" + target_movie.release_date.strftime("%d %B %Y") + "\n\n" + \
                     "↘ <b>Plot</b>\n" + target_movie.plot + "\n\n" + \
@@ -148,7 +148,7 @@ def info(update, context):
                     "↘ <b>Country</b>\n" + target_movie.country + "\n\n" + \
                     "↘ <b>IMDB Link</b>\n" + "https://www.imdb.com" + target_movie.imdb_link + "\n\n" + \
                     "Not enough information? <a href=\'" + google_link + "\'>🔎 Google it! </a>"
-
+    
     # Check if poster exists or if the poster link is valid
     has_poster = False
     if target_movie.poster_link:
@@ -228,9 +228,8 @@ def notify_user(context: CallbackContext):
                             "➡️ <a href=\"{}\">Search on Google</a>"
     movies_text = ""
     for movie in movies_released:
-        query_str = movie.title.split(' ')
-        query_str.append(movie.year)
-        google_link = google_link_template.format('+'.join(query_str))
+        query_str = movie.title + " " + movie.year
+        google_link = google_link_template.format(urllib.parse.quote(query_str))
         full_imdb_link = full_imdb_link_template.format(movie.imdb_link)
         movie_desc = movie_desc_template.format(movie.title, full_imdb_link, google_link)
         movies_text = movies_text + movie_desc + "\n\n"
