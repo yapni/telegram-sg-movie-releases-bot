@@ -32,10 +32,11 @@ def start(update, context):
     Adds new users to the db so that they can receive update msgs from bot.
     '''
     chat_id = update.effective_chat.id
+    first_name = update.effective_user.first_name
     username = update.effective_user.username
 
     # Add new user to DB
-    user = User(chat_id, username)
+    user = User(chat_id, first_name, username)
     success_add = DB_MGR.insert_user(user)
 
     if success_add: # User added to db
@@ -54,9 +55,10 @@ def stop(update, context):
     Removes users from the db so that they can no longer receive update msgs from bot.
     '''
     chat_id = update.effective_chat.id
+    first_name = update.effective_user.first_name
     username = update.effective_user.username
 
-    user = User(chat_id, username)
+    user = User(chat_id, first_name, username)
     success_del = DB_MGR.delete_user(user)
 
     if success_del: # User exists in db and successfully removed
@@ -243,19 +245,19 @@ def notify_user(context: CallbackContext):
         if movies_released:
             help_text = help_text_template.format(movies_released[0].title)
             main_text = "☀ Good morning {}! Here are the movie releases in Singapore today:\n\n{}{}" \
-                        .format(user.username, movies_text, help_text)
+                        .format(user.first_name, movies_text, help_text)
             context.bot.send_message(chat_id=user.chat_id, text=main_text, parse_mode=ParseMode.HTML)
         else:
             main_text = "☀ Good morning {}! Unfortunately, there are no movie releases in Singapore today. " \
                         "You can still check out upcoming releases by typing /listall." \
-                        .format(user.username)
+                        .format(user.first_name)
             try:
                 context.bot.send_message(chat_id=user.chat_id, text=main_text, parse_mode=ParseMode.HTML)
             except Unauthorized:
                 # User has blocked the bot: remove user from the database
                 DB_MGR.delete_user(user)
                 LOGGER.info("Removed user {} (id: {}) from the database as they have blocked/stopped the bot" \
-                            .format(user.username, user.chat_id))
+                            .format(user.first_name, user.chat_id))
     
     LOGGER.info("Notified users on today's releases")
 
@@ -307,6 +309,7 @@ def main():
     job_queue.run_once(update_db, datetime.time(hour=0, minute=0, second=0, tzinfo=timezone)) # Every midnight
     job_queue.run_once(notify_user, datetime.time(hour=8, minute=30, second=0, tzinfo=timezone)) # Every 8.30am
     job_queue.run_repeating(wake, datetime.timedelta(minutes=10)) # Wake bot every 10 mins
+    job_queue.run_once(notify_user, datetime.timedelta(seconds=10))
 
     # Register callback functions
     # /start

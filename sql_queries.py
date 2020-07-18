@@ -46,12 +46,13 @@ DELETE_MOVIE = 'DELETE FROM movies WHERE imdb_id=%s;'
 # Create users table
 CREATE_USERS_TABLE = 'CREATE TABLE IF NOT EXISTS users ( \
     chat_id integer PRIMARY KEY, \
+    first_name varchar(50), \
     username varchar(50) \
 );'
 
 # Insert a user object in the users table
-INSERT_USER = 'INSERT INTO users (chat_id, username) \
-                VALUES (%s, %s) \
+INSERT_USER = 'INSERT INTO users (chat_id, first_name, username) \
+                VALUES (%s, %s, %s) \
                 ON CONFLICT DO NOTHING;'
 
 # Get users

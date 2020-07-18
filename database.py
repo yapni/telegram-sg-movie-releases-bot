@@ -81,7 +81,7 @@ class DatabaseManager:
         Insert a user object into the users table. If user already exists, do nothing.
         Returns 1 if user is inserted into the db, 0 if user already exists in the db.
         '''
-        self.cursor.execute(queries.INSERT_USER, (user.chat_id, user.username))
+        self.cursor.execute(queries.INSERT_USER, (user.chat_id, user.first_name, user.username))
         row_count = self.cursor.rowcount
         self.connection.commit()
         return row_count
@@ -92,7 +92,7 @@ class DatabaseManager:
         '''
         self.cursor.execute(queries.GET_USERS)
         rows = self.cursor.fetchall()
-        users = [User(row[0], row[1]) for row in rows]
+        users = [User(row[0], row[1], row[2]) for row in rows]
         return users
     
     def delete_user(self, user):
