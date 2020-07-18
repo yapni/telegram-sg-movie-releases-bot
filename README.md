@@ -42,3 +42,6 @@ $ pip install -r requirements.txt
 $ python3 main.py 
 ```
 4. Add the bot to a Telegram group. Enter "/help" and follow the instructions given by the bot.
+
+## License
+This project is licensed under the terms of the GNU General Public License v3.0.
